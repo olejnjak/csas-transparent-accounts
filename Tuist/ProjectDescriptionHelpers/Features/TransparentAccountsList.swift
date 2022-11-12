@@ -19,5 +19,6 @@ public let transparentAccountsListTests = Target(
     sources: "Features/TransparentAccountsList/Tests/**",
     dependencies: [
         .target(name: transparentAccountsList.name),
+        .package(product: "SnapshotTesting")
     ]
 )
