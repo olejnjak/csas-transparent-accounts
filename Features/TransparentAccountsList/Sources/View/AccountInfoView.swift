@@ -5,10 +5,6 @@ struct AccountInfoView: View {
     
     var body: some View {
         VStack(alignment: .leading) {
-            Text(account.name)
-                .font(.subheadline)
-                .bold()
-            
             if let description = account.description {
                 Text(description)
                     .font(.caption)
@@ -20,10 +16,11 @@ struct AccountInfoView: View {
                     .italic()
             }
             
-            Spacer(minLength: 32)
+            Spacer(minLength: 8)
             
             Text(account.accountNumber)
-                .font(.body)
+                .font(.caption)
+                .fixedSize()
         }
         .lineLimit(nil)
     }

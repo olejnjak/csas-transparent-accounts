@@ -4,8 +4,7 @@ import Foundation
 public struct Account {
     public let name: String
     public let accountNumber: String
-    public let balance: Double
-    public let currency: String
+    public let balance: String
     public let description: String?
     public let note: String?
 }
@@ -15,8 +14,8 @@ extension Core.Account_API {
         guard
             let accountNumber,
             let bankCode,
-            let balance,
             let currency,
+            let balance = balance.flatMap { NumberFormatter.currencyFormatter(currency).string(from: .init(value: $0)) },
             let name
         else {
             // TODO: Log failed conversion
@@ -27,7 +26,6 @@ extension Core.Account_API {
             name: name,
             accountNumber: accountNumber + "/" + bankCode,
             balance: balance,
-            currency: currency,
             description: description,
             note: note
         )
