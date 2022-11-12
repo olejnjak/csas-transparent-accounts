@@ -12,5 +12,4 @@ public struct Account_API: Page {
     public let name: String?
     public let description: String?
     public let note: String?
-    public let iban: String?
 }

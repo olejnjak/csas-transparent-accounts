@@ -28,7 +28,7 @@ final class AccountsListViewModel: AccountsListViewModeling {
             $state.value = .loading
             
             let response = try await accountsAPI.transparentAccounts(page: 0, size: 25, filter: nil)
-            $state.value = .data(response.page?.map { $0.domain } ?? [])
+            $state.value = .data(response.page?.compactMap { $0.domain } ?? [])
         } catch {
             $state.value = .error(error)
         }

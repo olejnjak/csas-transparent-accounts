@@ -4,13 +4,17 @@ struct ErrorView: View {
     let message: String
     
     var body: some View {
-        VStack {
+        VStack(alignment: .center) {
             Image(systemName: "exclamationmark.circle")
                 .resizable()
                 .frame(width: 40, height: 40)
+            
             Text(message)
                 .foregroundColor(.primary)
                 .font(.body)
+                .lineLimit(nil)
+                .multilineTextAlignment(.center)
+            
         }.opacity(0.5)
     }
 }
