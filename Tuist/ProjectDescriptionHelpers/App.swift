@@ -29,5 +29,6 @@ public let app = Target(
     ],
     dependencies: [
         .target(name: core.name),
+        .target(name: transparentAccountsList.name),
     ]
 )

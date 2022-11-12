@@ -16,3 +16,11 @@ public struct UnexpectedResponseCode: Error {
 public struct NoBody: Error {
     public init() { }
 }
+
+public struct InvalidURL: Error {
+    public let string: String?
+    
+    public init(string: String?) {
+        self.string = string
+    }
+}

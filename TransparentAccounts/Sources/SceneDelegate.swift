@@ -15,6 +15,16 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window.rootViewController?.view.backgroundColor = .red
         window.makeKeyAndVisible()
         self.window = window
+        
+        Task {
+            do {
+                let response = try await appDependencies.transparentAccountsAPI
+                    .transparentAccounts(page: 0, size: 25, filter: nil)
+                print("[RESPONSE]", response.page)
+            } catch {
+                print("[ERROR]", error)
+            }
+        }
     }
 }
 

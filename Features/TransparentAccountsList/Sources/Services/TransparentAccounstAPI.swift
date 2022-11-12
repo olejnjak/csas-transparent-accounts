@@ -36,10 +36,23 @@ public final class TransparentAccountsAPI: Core.TransparentAccountsAPI {
     public func transparentAccounts(
         page: Int,
         size: Int,
-        filter: String
+        filter: String?
     ) async throws -> Core.TransparentAccountsResponse {
+        var urlComponents = URLComponents(url: baseURL, resolvingAgainstBaseURL: true)
+        urlComponents?.queryItems = [
+            .init(name: "page", value: .init(page)),
+            .init(name: "size", value: .init(size)),
+            .init(name: "filter", value: filter),
+        ].filter { !($0.value ?? "").isEmpty }
+        
+        guard let url = urlComponents?.url else {
+            throw InvalidURL(string: urlComponents?.string)
+        }
+        
+        print("[URL]", url.absoluteString)
+        
         let response = try await jsonAPI.request(
-            url: baseURL,
+            url: url,
             headers: [
                 .apiKeyHeaderName: webAPIKey()
             ],

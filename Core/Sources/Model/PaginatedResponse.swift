@@ -33,12 +33,12 @@ public struct PaginatedResponse<P: Page>: Decodable {
     
     public let size: Int?
     public let nextPage: Int?
-    public let page: P?
+    public let page: [P]?
     
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.size = try container.decodeIfPresent(Int.self, forKey: .size)
         self.nextPage = try container.decodeIfPresent(Int.self, forKey: .nextPage)
-        self.page = try container.decodeIfPresent(P.self, forKey: .page)
+        self.page = try container.decodeIfPresent([P].self, forKey: .page)
     }
 }
