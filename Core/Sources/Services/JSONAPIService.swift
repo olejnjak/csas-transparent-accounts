@@ -6,6 +6,10 @@ public struct JSONResponse<Body: Decodable> {
     public let body: Body?
 }
 
+public struct EmptyBody: Codable {
+    
+}
+
 extension JSONResponse: ExpressibleByNilLiteral {
     public init(nilLiteral: ()) {
         self.init(statusCode: nil, headers: nil, body: nil)
@@ -17,7 +21,8 @@ public protocol JSONAPIServicing {
         url: URL,
         method: String,
         headers: [String: String]?,
-        body: RequestBody?
+        body: RequestBody?,
+        responseBodyType: ResponseBody.Type
     ) async throws -> JSONResponse<ResponseBody>
 }
 
@@ -26,13 +31,15 @@ public extension JSONAPIServicing {
         url: URL,
         method: String = "GET",
         headers: [String: String]? = nil,
-        body: RequestBody? = nil
+        body: RequestBody? = EmptyBody?.none,
+        responseBodyType: ResponseBody.Type = ResponseBody.self
     ) async throws -> JSONResponse<ResponseBody> {
         try await request(
             url: url,
             method: method,
             headers: headers,
-            body: body
+            body: body,
+            responseBodyType: responseBodyType
         )
     }
 }
@@ -56,7 +63,8 @@ public final class JSONAPIService: JSONAPIServicing {
         url: URL,
         method: String,
         headers: [String : String]?,
-        body: RequestBody?
+        body: RequestBody?,
+        responseBodyType: ResponseBody.Type
     ) async throws -> JSONResponse<ResponseBody> {
         var request = URLRequest(url: url)
         request.allHTTPHeaderFields = headers
@@ -75,7 +83,7 @@ public final class JSONAPIService: JSONAPIServicing {
         return try await .init(
             statusCode: httpResponse.statusCode,
             headers: httpResponse.allHeaderFields,
-            body: decoder.asyncDecode(ResponseBody.self, from: data)
+            body: decoder.asyncDecode(responseBodyType, from: data)
         )
     }
 }

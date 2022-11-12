@@ -6,5 +6,6 @@ let project = Project(
     targets: [
         app,
         core,
+        transparentAccountsList, transparentAccountsListTests,
     ]
 )
