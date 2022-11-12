@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>baseURL</key>
+	<string>https://webapi.developers.erstegroup.com/api/csas/public/sandbox/v3/transparentAccounts</string>
+	<key>apiKey</key>
+	<string>871afc23-018a-4abe-af8e-b5f757e5c45c</string>
+</dict>
+</plist>
