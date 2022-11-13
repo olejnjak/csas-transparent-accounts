@@ -1,8 +1,12 @@
-//
-//  AppFlowCoordinator.swift
-//  TransparentAccounts
-//
-//  Created by Jakub Olejník on 12.11.2022.
-//
+import TransparentAccountsList
+import UIKit
 
-import Foundation
+final class AppFlowCoordinator {
+    func start(in window: UIWindow) {
+        let listVM = createAccountsListVM(accountsAPI: appDependencies.transparentAccountsAPI)
+        let listVC = AccountsListViewController(viewModel: listVM)
+        
+        window.rootViewController = listVC
+        window.makeKeyAndVisible()
+    }
+}

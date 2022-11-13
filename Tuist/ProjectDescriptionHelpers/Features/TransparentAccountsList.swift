@@ -5,10 +5,16 @@ public let transparentAccountsList = Target(
     platform: .iOS,
     product: .staticFramework,
     bundleId: "cz.olejnjak.TransparentAccounts.TransparentAccountsList",
-    sources: "Features/TransparentAccountsList/Sources/**",
+    sources: [
+        "Features/TransparentAccountsList/Sources/**",
+        "Features/TransparentAccountsList/Development_Sources/**",
+    ],
     dependencies: [
         .target(name: core.name),
-    ]
+    ],
+    settings: .settings(base: [
+        "DEVELOPMENT_ASSET_PATHS": "$SRCROOT/Features/TransparentAccountsList/Development_Sources"
+    ])
 )
 
 public let transparentAccountsListTests = Target(

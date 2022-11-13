@@ -8,19 +8,21 @@ public protocol AccountsListViewModeling {
     func fetchAccounts() async
 }
 
+public func createAccountsListVM(
+    accountsAPI: Core.TransparentAccountsAPI
+) -> AccountsListViewModeling {
+    AccountsListViewModel(accountsAPI: accountsAPI)
+}
+
 final class AccountsListViewModel: AccountsListViewModeling {
-    struct Dependencies {
-        let accountsAPI: Core.TransparentAccountsAPI
-    }
-    
     @Property(.data([])) var state: any Publisher<DataState<[Account], Error>, Never>
     
     private let accountsAPI: Core.TransparentAccountsAPI
     
     // MARK: - Initializers
     
-    init(dependencies: Dependencies) {
-        accountsAPI = dependencies.accountsAPI
+    init(accountsAPI: Core.TransparentAccountsAPI) {
+        self.accountsAPI = accountsAPI
     }
     
     func fetchAccounts() async {

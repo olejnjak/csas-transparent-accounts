@@ -1,7 +1,7 @@
 import Core
 import Foundation
 
-public struct Account {
+public struct Account: Hashable {
     public let name: String
     public let accountNumber: String
     public let balance: String
@@ -15,7 +15,7 @@ extension Core.Account_API {
             let accountNumber,
             let bankCode,
             let currency,
-            let balance = balance.flatMap { NumberFormatter.currencyFormatter(currency).string(from: .init(value: $0)) },
+            let balance = balance.flatMap ({ NumberFormatter.currencyFormatter(currency).string(from: .init(value: $0)) }),
             let name
         else {
             // TODO: Log failed conversion

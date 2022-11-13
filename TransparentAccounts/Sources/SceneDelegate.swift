@@ -2,6 +2,8 @@ import UIKit
 
 final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
+    
+    private lazy var appFlow = AppFlowCoordinator()
 
     func scene(
         _ scene: UIScene,
@@ -11,20 +13,8 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let scene = (scene as? UIWindowScene) else { return }
         
         let window = UIWindow(windowScene: scene)
-        window.rootViewController = UIViewController()
-        window.rootViewController?.view.backgroundColor = .red
-        window.makeKeyAndVisible()
+        appFlow.start(in: window)
         self.window = window
-        
-        Task {
-            do {
-                let response = try await appDependencies.transparentAccountsAPI
-                    .transparentAccounts(page: 0, size: 25, filter: nil)
-                print("[RESPONSE]", response.page)
-            } catch {
-                print("[ERROR]", error)
-            }
-        }
     }
 }
 
