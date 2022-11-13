@@ -5,7 +5,7 @@ import Foundation
 public protocol AccountsListViewModeling {
     var state: any Publisher<DataState<[Account], Error>, Never> { get }
     
-    func fetchAccounts() async
+    func fetchAccounts(isRefreshing: Bool) async
 }
 
 public func createAccountsListVM(
@@ -25,9 +25,9 @@ final class AccountsListViewModel: AccountsListViewModeling {
         self.accountsAPI = accountsAPI
     }
     
-    func fetchAccounts() async {
+    func fetchAccounts(isRefreshing: Bool) async {
         do {
-            $state.value = .loading
+            $state.value = isRefreshing ? .refreshing : .loading
             
             let response = try await accountsAPI.transparentAccounts(page: 0, size: 25, filter: nil)
             $state.value = .data(response.page?.compactMap { $0.domain } ?? [])

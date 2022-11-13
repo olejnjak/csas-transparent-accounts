@@ -1,2 +1,3 @@
-"Unable to fetch list of accounts" = "Nepodařilo se stáhnout seznam účtů";
+"No accounts" = "Žádné transparentní účty";
 "Try again" = "Zkusit znovu";
+"Unable to fetch list of accounts" = "Nepodařilo se stáhnout seznam transparentních účtů";

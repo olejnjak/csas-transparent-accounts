@@ -14,6 +14,7 @@ public final class AccountsListViewController: UIViewController {
     
     private weak var loadingAI: UIActivityIndicatorView!
     private weak var errorView: UIHostingController<ErrorView>!
+    private weak var emptyView: UIHostingController<ErrorView>!
     
     // MARK: - Initializers
     
@@ -38,7 +39,7 @@ public final class AccountsListViewController: UIViewController {
         refreshControl.addAction(.init { [weak self] action in
             if let refreshControl = action.sender as? UIRefreshControl {
                 Task {
-                    await self?.viewModel.fetchAccounts()
+                    await self?.viewModel.fetchAccounts(isRefreshing: true)
                     refreshControl.endRefreshing()
                 }
             }
@@ -70,29 +71,26 @@ public final class AccountsListViewController: UIViewController {
         ])
         self.loadingAI = loadingAI
         
-        let errorView = UIHostingController(rootView: ErrorView(
+        let errorView = createErrorView(
+            tableView: tableView,
             message: TransparentAccountsListStrings.unableToFetchListOfAccounts,
             action: errorRetryAction()
-        ))
-        errorView.sizingOptions = .intrinsicContentSize
-        errorView.view.translatesAutoresizingMaskIntoConstraints = false
-        errorView.willMove(toParent: self)
-        addChild(errorView)
-        tableView.addSubview(errorView.view)
-        NSLayoutConstraint.activate([
-            errorView.view.centerXAnchor.constraint(equalTo: tableView.centerXAnchor),
-            errorView.view.centerYAnchor.constraint(equalTo: tableView.centerYAnchor),
-            errorView.view.widthAnchor.constraint(lessThanOrEqualTo: view.readableContentGuide.widthAnchor),
-        ])
-        errorView.didMove(toParent: self)
+        )
         self.errorView = errorView
+        
+        let emptyView = createErrorView(
+            tableView: tableView,
+            message: TransparentAccountsListStrings.noAccounts,
+            action: errorRetryAction()
+        )
+        self.emptyView = emptyView
     }
     
     public override func viewDidLoad() {
         super.viewDidLoad()
         
         Task {
-            await viewModel.fetchAccounts()
+            await viewModel.fetchAccounts(isRefreshing: false)
         }
         setupBindings()
     }
@@ -125,14 +123,19 @@ public final class AccountsListViewController: UIViewController {
         case .loading:
             loadingAI.startAnimating()
             errorView.view.isHidden = true
+            emptyView.view.isHidden = true
             showAccounts([])
+        case .refreshing:
+            loadingAI.stopAnimating()
         case .error:
             showAccounts([])
             loadingAI.stopAnimating()
             errorView.view.isHidden = false
+            emptyView.view.isHidden = true
         case .data(let data):
             loadingAI.stopAnimating()
             errorView.view.isHidden = true
+            emptyView.view.isHidden = !data.isEmpty
             showAccounts(data)
         }
     }
@@ -147,8 +150,32 @@ public final class AccountsListViewController: UIViewController {
     private func errorRetryAction() -> ErrorView.Action {
         .init(title: TransparentAccountsListStrings.tryAgain) { [weak self] in
             Task {
-                await self?.viewModel.fetchAccounts()
+                await self?.viewModel.fetchAccounts(isRefreshing: false)
             }
         }
+    }
+    
+    private func createErrorView(
+        tableView: UITableView,
+        message: String,
+        action: ErrorView.Action?
+    ) -> UIHostingController<ErrorView> {
+        let hosting = UIHostingController(rootView: ErrorView(
+            message: message,
+            action: action
+        ))
+        hosting.sizingOptions = .intrinsicContentSize
+        hosting.view.isHidden = true
+        hosting.view.translatesAutoresizingMaskIntoConstraints = false
+        hosting.willMove(toParent: self)
+        addChild(hosting)
+        tableView.addSubview(hosting.view)
+        NSLayoutConstraint.activate([
+            hosting.view.topAnchor.constraint(equalTo: tableView.topAnchor, constant: 150),
+            hosting.view.centerXAnchor.constraint(equalTo: tableView.centerXAnchor),
+            hosting.view.widthAnchor.constraint(lessThanOrEqualTo: view.readableContentGuide.widthAnchor),
+        ])
+        hosting.didMove(toParent: self)
+        return hosting
     }
 }
