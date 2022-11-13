@@ -49,8 +49,6 @@ public final class TransparentAccountsAPI: Core.TransparentAccountsAPI {
             throw InvalidURL(string: urlComponents?.string)
         }
         
-        print("[URL]", url.absoluteString)
-        
         let response = try await jsonAPI.request(
             url: url,
             headers: [
