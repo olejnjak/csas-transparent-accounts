@@ -1,7 +1,13 @@
 import SwiftUI
 
 struct ErrorView: View {
+    struct Action {
+        let title: String
+        let handler: () -> Void
+    }
+    
     let message: String
+    let action: Action?
     
     var body: some View {
         VStack(alignment: .center) {
@@ -14,13 +20,20 @@ struct ErrorView: View {
                 .font(.body)
                 .lineLimit(nil)
                 .multilineTextAlignment(.center)
-            
+
+            if let action {
+                Button(action: action.handler) {
+                    Text(action.title)
+                }
+                .buttonStyle(.bordered)
+                .padding(.top)
+            }
         }.opacity(0.5)
     }
 }
 
 struct ErrorView_Previews: PreviewProvider {
     static var previews: some View {
-        ErrorView(message: "Data se nepodařilo načíst")
+        ErrorView(message: "Data se nepodařilo načíst", action: nil)
     }
 }
