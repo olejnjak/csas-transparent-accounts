@@ -9,6 +9,7 @@ public let transparentAccountsList = Target(
         "Features/TransparentAccountsList/Sources/**",
         "Features/TransparentAccountsList/Development_Sources/**",
     ],
+    resources: "Features/TransparentAccountsList/Resources/**",
     dependencies: [
         .target(name: core.name),
     ],

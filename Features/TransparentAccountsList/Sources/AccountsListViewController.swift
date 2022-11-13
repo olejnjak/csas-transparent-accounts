@@ -13,6 +13,7 @@ public final class AccountsListViewController: UIViewController {
     private var cancellables = Set<AnyCancellable>()
     
     private weak var loadingAI: UIActivityIndicatorView!
+    private weak var errorView: UIHostingController<ErrorView>!
     
     // MARK: - Initializers
     
@@ -68,6 +69,23 @@ public final class AccountsListViewController: UIViewController {
             loadingAI.centerYAnchor.constraint(equalTo: view.centerYAnchor),
         ])
         self.loadingAI = loadingAI
+        
+        let errorView = UIHostingController(rootView: ErrorView(
+            message: TransparentAccountsListStrings.unableToFetchListOfAccounts,
+            action: errorRetryAction()
+        ))
+        errorView.sizingOptions = .intrinsicContentSize
+        errorView.view.translatesAutoresizingMaskIntoConstraints = false
+        errorView.willMove(toParent: self)
+        addChild(errorView)
+        tableView.addSubview(errorView.view)
+        NSLayoutConstraint.activate([
+            errorView.view.centerXAnchor.constraint(equalTo: tableView.centerXAnchor),
+            errorView.view.centerYAnchor.constraint(equalTo: tableView.centerYAnchor),
+            errorView.view.widthAnchor.constraint(lessThanOrEqualTo: view.readableContentGuide.widthAnchor),
+        ])
+        errorView.didMove(toParent: self)
+        self.errorView = errorView
     }
     
     public override func viewDidLoad() {
@@ -106,12 +124,15 @@ public final class AccountsListViewController: UIViewController {
         switch state {
         case .loading:
             loadingAI.startAnimating()
+            errorView.view.isHidden = true
             showAccounts([])
-        case .error(let error):
+        case .error:
+            showAccounts([])
             loadingAI.stopAnimating()
-            showAccounts([])
+            errorView.view.isHidden = false
         case .data(let data):
             loadingAI.stopAnimating()
+            errorView.view.isHidden = true
             showAccounts(data)
         }
     }
@@ -121,5 +142,13 @@ public final class AccountsListViewController: UIViewController {
         snapshot.appendSections([0])
         snapshot.appendItems(accounts)
         dataSource?.apply(snapshot)
+    }
+    
+    private func errorRetryAction() -> ErrorView.Action {
+        .init(title: TransparentAccountsListStrings.tryAgain) { [weak self] in
+            Task {
+                await self?.viewModel.fetchAccounts()
+            }
+        }
     }
 }
